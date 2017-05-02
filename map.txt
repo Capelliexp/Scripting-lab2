@@ -1,7 +1,0 @@
-* Regex
-	* CharClass
-		- contents
-	* Star
-		- operand
-	* Seq
-		- number
