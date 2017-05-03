@@ -10,7 +10,7 @@ std::string globalLine;
 int input = 0;
 
 //#include "regexMatcher.cpp"
-#include "parser.cpp"
+#include "tree.cpp"
 
 int main(){
 	/*std::string testStrings[13] = {
@@ -44,8 +44,7 @@ int main(){
 		std::cout << testCode[i] << "  :  " << TABLE() << std::endl;
 	}
 
-	//globalLine = testCode[1];
-	//std::cout << TABLE() << std::endl;
+
 
 	return 1;
 }
