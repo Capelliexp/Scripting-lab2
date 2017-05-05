@@ -78,7 +78,6 @@ bool TABLE2(Tree **result){
 
 	input = start;
 	*result = new Tree("TABLE2", start, input);
-  	//(*result)->children.push_back(child1);
 	return true;
 }
 
@@ -96,7 +95,6 @@ bool TABLE3(Tree **result){
 
 	input = start;
 	*result = new Tree("TABLE3", start, input);
-  	//(*result)->children.push_back(child1);
 
 	return true;
 }
@@ -114,12 +112,10 @@ bool FIELD(Tree **result){
 }
 
 bool NUMBER(Tree **result){
-	//Tree *child;
 	int start = input;
 
 	if(nonDecimal.match(&globalLine[input]) || decimal.match(&globalLine[input])){
 		*result = new Tree("NUMBER", start, input);
-  		//(*result)->children.push_back(child);
 		return true;
 	}
 
@@ -167,7 +163,6 @@ bool RIGHT_HAND(Tree **result){
 
 	if(identifier.match(&globalLine[input])){
 		*result = new Tree("RIGHT_HAND", start, input);
-  		//(*result)->children.push_back(child1);
 		return true;
 	}
 	else if(TERM(&child1, '\"') && (string.match(&globalLine[input])) && TERM(&child2, '\"')){
@@ -179,7 +174,6 @@ bool RIGHT_HAND(Tree **result){
 	
 	else if(hex.match(&globalLine[input])){
 		*result = new Tree("RIGHT_HAND", start, input);
-  		//(*result)->children.push_back(child1);
 		return true;
 	}
 
