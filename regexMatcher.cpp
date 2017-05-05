@@ -1,3 +1,6 @@
+#ifndef REGEXMATCHER_CPP
+#define REGEXMATCHER_CPP 
+
 #include <string>
 #include <iostream>
 #include <list>
@@ -84,18 +87,17 @@ CharClass digit("0123456789");
 CharClass nonzero("123456789");
 CharClass hexDigits("0123456789abcdefABCDEF");
 CharClass dot(".");
-CharClass comma(",");
 CharClass zero("0");
 CharClass x("x");
-CharClass quote("\"");
-CharClass operators("+-*/");
 CharClass lettersSmall("abcdefghijklmnopqrstuvwxyz");
-CharClass lettersSmallAndBig("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ");
-CharClass lettersAndDigits("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ0123456789");
-CharClass lettersAndDigitsAndSymbols("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ0123456789!#¤&/()=?`'][€$£@^~*-_.:,<>§ ");
+CharClass lettersSmallAndBig("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+CharClass lettersAndDigits("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+CharClass lettersAndDigitsAndSymbols("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#¤&/()=?`'][€$£@^~*-_.:,<>§ ");
 
 Seq hex({&zero, &x,&hexDigits, new Star(&hexDigits)}); //[0][x][a-zA-Z0-9]*
 Seq decimal({&nonzero, new Star(&digit), &dot, new Star(&digit)});	//[1-9][0-9]*.[0-9]*
 Seq nonDecimal({&nonzero, new Star(&digit)});	//[1-9][0-9]*
 Seq identifier({&lettersSmallAndBig, new Star(&lettersAndDigits)});	//[a-zA-Z][a-zA-Z0-9]
 Seq string({new Star(&lettersAndDigitsAndSymbols)});	//"[a-zA-Z0-9!-§]*"
+
+#endif

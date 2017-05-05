@@ -17,136 +17,197 @@ SEPARATOR : "," | ";"
 
 LEFT_HAND : identifier | "[" RIGHT_HAND "]" 
 		
-RIGHT_HAND : NUMBER | identifier | string | hex | TABLE
+RIGHT_HAND : NUMBER | identifier | """ string """ | hex | TABLE
 
 OPERATIONS : LEFT_HAND "=" RIGHT_HAND
 */
 //--------------------------
 #include "regexMatcher.cpp"
+#include "tree.cpp"
 
-bool TABLE();
-bool TABLE2();
-bool TABLE3();
-bool FIELD();
-bool NUMBER();
-bool SEPERATOR();
-bool LEFT_HAND();
-bool RIGHT_HAND();
-bool OPERATIONS();
+bool TERM(Tree **result, char lit);
+bool TABLE(Tree **result);
+bool TABLE2(Tree **result);
+bool TABLE3(Tree **result);
+bool FIELD(Tree **result);
+bool NUMBER(Tree **result);
+bool SEPERATOR(Tree **result);
+bool LEFT_HAND(Tree **result);
+bool RIGHT_HAND(Tree **result);
+bool OPERATIONS(Tree **result);
 
-bool TERM(char lit){
-	//std::cout << "TERM ska nu ta bort " << lit << " från " << globalLine[input] << std::endl;
+bool TERM(Tree **result, char lit){
+	int start = input;
 
     if(globalLine[input] != lit){
     	return false;
     }
-  
 	input++;
-	//std::cout << "TERM < " << input << std::endl;;
+	*result = new Tree("TERM", start, input);
+
 	return true;
 }
 
-bool TABLE(){
-	if(TERM('{') && TABLE2() && TERM('}')){
-		//std::cout << "TABLE < " << input << std::endl;;
+bool TABLE(Tree **result){
+	Tree *child1;
+	Tree *child2;
+	Tree *child3;
+	int start = input;
+
+	if(TERM(&child1, '{') && TABLE2(&child2) && TERM(&child3,'}')){
+		*result = new Tree("TABLE", start, input);
+  		(*result)->children.push_back(child1);
+  		(*result)->children.push_back(child2);
+  		(*result)->children.push_back(child3);
 		return true;
 	}
 	return false;
 }
 
-bool TABLE2(){
-	//char *start = input;
+bool TABLE2(Tree **result){
+	Tree *child1;
+	Tree *child2;
 	int start = input;
 
-	if(FIELD() && TABLE3()){
-		//std::cout << "TABLE2 < " << input << std::endl;;
+	if(FIELD(&child1) && TABLE3(&child2)){
+		*result = new Tree("TABLE2", start, input);
+  		(*result)->children.push_back(child1);
+  		(*result)->children.push_back(child2);
 		return true;
 	}
 
 	input = start;
-	//std::cout << "TABLE2 (out) ";
+	*result = new Tree("TABLE2", start, input);
+  	//(*result)->children.push_back(child1);
 	return true;
 }
 
-bool TABLE3(){
-	//char *start = input;
+bool TABLE3(Tree **result){
+	Tree *child1;
+	Tree *child2;
 	int start = input;
 
-	if(SEPERATOR() && TABLE2()){
-		//std::cout << "TABLE3 < " << input << std::endl;;
+	if(SEPERATOR(&child1) && TABLE2(&child2)){
+		*result = new Tree("TABLE3", start, input);
+  		(*result)->children.push_back(child1);
+  		(*result)->children.push_back(child2);
 		return true;
 	}
 
 	input = start;
-	//std::cout << "TABLE3 (out) ";
+	*result = new Tree("TABLE3", start, input);
+  	//(*result)->children.push_back(child1);
+
 	return true;
 }
 
-bool FIELD(){
-	if(OPERATIONS() || RIGHT_HAND()){
-		//std::cout << "FIELD < " << input << std::endl;;
+bool FIELD(Tree **result){
+	Tree *child;
+	int start = input;
+
+	if(OPERATIONS(&child) || RIGHT_HAND(&child)){
+		*result = new Tree("FIELD", start, input);
+  		(*result)->children.push_back(child);
 		return true;
 	}
 	return false;
 }
 
-bool NUMBER(){
+bool NUMBER(Tree **result){
+	//Tree *child;
+	int start = input;
+
 	if(nonDecimal.match(&globalLine[input]) || decimal.match(&globalLine[input])){
-		//std::cout << "NUMBER < " << input << std::endl;;
+		*result = new Tree("NUMBER", start, input);
+  		//(*result)->children.push_back(child);
 		return true;
 	}
 
 	return false;
 }
 
-bool SEPERATOR(){
-	if(TERM(',') || TERM(';')){
-		//std::cout << "SEPERATOR < " << input << std::endl;;
+bool SEPERATOR(Tree **result){
+	Tree *child;
+	int start = input;
+
+	if(TERM(&child, ',') || TERM(&child, ';')){
+		*result = new Tree("SEPERATOR", start, input);
+  		(*result)->children.push_back(child);
 		return true;
 	}
 
 	return false;
 }
 
-bool LEFT_HAND(){
+bool LEFT_HAND(Tree **result){
+	Tree *child1;
+	Tree *child2;
+	Tree *child3;
+	int start = input;
 
-	if((identifier.match(&globalLine[input])) || (TERM('[') && RIGHT_HAND() && TERM(']'))){
-		//std::cout << "LEFT_HAND < " << input << std::endl;;
+	if(TERM(&child1, '[') && RIGHT_HAND(&child2) && TERM(&child3, ']')){
+		*result = new Tree("LEFT_HAND", start, input);
+  		(*result)->children.push_back(child1);
+  		(*result)->children.push_back(child2);
+  		(*result)->children.push_back(child3);
 		return true;
 	}
+	else if(identifier.match(&globalLine[input])){
+		*result = new Tree("LEFT_HAND", start, input);
+		return true;
+	}
+
 	return false;
 }
 
-bool RIGHT_HAND(){
+bool RIGHT_HAND(Tree **result){
+	Tree *child1;
+	Tree *child2;
+	int start = input;
+
 	if(identifier.match(&globalLine[input])){
-		//std::cout << "RIGHT_HAND (identifier) < " << input << std::endl;;
+		*result = new Tree("RIGHT_HAND", start, input);
+  		//(*result)->children.push_back(child1);
 		return true;
 	}
-	if(TERM('\"') && (string.match(&globalLine[input])) && TERM('\"')){
-		//std::cout << "RIGHT_HAND (string) < " << input << std::endl;;
+	else if(TERM(&child1, '\"') && (string.match(&globalLine[input])) && TERM(&child2, '\"')){
+		*result = new Tree("RIGHT_HAND", start, input);
+  		(*result)->children.push_back(child1);
+  		(*result)->children.push_back(child2);
 		return true;
 	}
 	
-	if(hex.match(&globalLine[input])){
-		//std::cout << "RIGHT_HAND (hex) < " << input << std::endl;;
+	else if(hex.match(&globalLine[input])){
+		*result = new Tree("RIGHT_HAND", start, input);
+  		//(*result)->children.push_back(child1);
 		return true;
 	}
 
-	if(TABLE()){
-		//std::cout << "RIGHT_HAND (TABLE) < " << input << std::endl;;
+	else if(TABLE(&child1)){
+		*result = new Tree("RIGHT_HAND", start, input);
+  		(*result)->children.push_back(child1);
 		return true;
 	}
-	if(NUMBER()){
-		//std::cout << "RIGHT_HAND (NUMBER) < " << input << std::endl;;
+	else if(NUMBER(&child1)){
+		*result = new Tree("RIGHT_HAND", start, input);
+  		(*result)->children.push_back(child1);
 		return true;
 	}
 	
 	return false;
 }
 
-bool OPERATIONS(){
-	if(LEFT_HAND() && TERM('=') && RIGHT_HAND()){
-		//std::cout << "OPERATIONS < " << input << std::endl;;
+bool OPERATIONS(Tree **result){
+	Tree *child1;
+	Tree *child2;
+	Tree *child3;
+	int start = input;
+
+	if(LEFT_HAND(&child1) && TERM(&child2, '=') && RIGHT_HAND(&child3)){
+		*result = new Tree("OPERATIONS", start, input);
+  		(*result)->children.push_back(child1);
+  		(*result)->children.push_back(child2);
+  		(*result)->children.push_back(child3);
 		return true;
 	}
 
